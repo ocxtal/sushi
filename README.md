@@ -7,7 +7,7 @@ sushi
 sushiはスネークゲームライクな寿司🍣ゲームです。画面上に表れる魚🐟とご飯🍚を食べることで
 寿司🍣が成長します。
 
-![ScreenShot](https://raw.github.com/wiki/aasoukai128/sushi/screenshot.jpg)
+![ScreenShot](https://raw.githubusercontent.com/aasoukai128/sushi/master/screenshot.jpg)
 
 ## 環境
 
@@ -16,7 +16,6 @@ ncursesに依存しています。Mac OS X 10.9上のOS X付属のターミナ�
 
 ## インストール
 
-./configure
-make
-make install
-
+    ./configure
+    make
+    make install
