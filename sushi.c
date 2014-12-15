@@ -29,7 +29,7 @@ struct sushi_ctx *sushi_init(char const *sushi, char const *fish[], int len, dou
 {
 	int i;
 	struct sushi_ctx *sc;
-	char const *eraser = "  ";
+	char const *eraser = " ";
 
 	/*
 	 * cursesの初期化
