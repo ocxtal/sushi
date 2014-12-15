@@ -14,7 +14,7 @@ AC_PROG_CC
 AC_CHECK_LIB(ncurses, initscr)
 
 # Checks for header files.
-AC_CHECK_HEADERS([locale.h stdlib.h string.h unistd.h])
+AC_CHECK_HEADERS([locale.h stdlib.h string.h unistd.h ncurses.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 
