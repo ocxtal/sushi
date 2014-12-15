@@ -89,11 +89,14 @@ struct sushi_ctx *sushi_init(char const *sushi, char const *fish[], int len, dou
 
 int sushi_show_game_over(struct sushi_ctx *sc)
 {
+	int score = sc->sushi_len;
 	erase();
 	/* ここにゲームオーバーの画面を表示 */
+	printf("\033[5;0H"); 
+	printf("\t*** Game Over --- Score:%d貫 ***\n", score);
 
 	refresh();
-	usleep(1000000);
+	usleep(3000000);
 	return SUSHI_GAME_OVER;
 }
 
