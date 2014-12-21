@@ -89,11 +89,17 @@ struct sushi_ctx *sushi_init(char const *sushi, char const *fish[], int len, dou
 
 int sushi_show_game_over(struct sushi_ctx *sc)
 {
+	int score = sc->sushi_len;
+
+	usleep(500000);
 	erase();
+	refresh();
 	/* ここにゲームオーバーの画面を表示 */
+	printf("\033[5;0H"); 
+	printf("\t*** Game Over --- Score:%d貫 ***\n", score);
 
 	refresh();
-	usleep(1000000);
+	usleep(3000000);
 	return SUSHI_GAME_OVER;
 }
 
@@ -234,6 +240,7 @@ int main(int argc, char *argv[])
 		switch(result) {
 			case 's':
 				tick = (long)((double)tick*10.0 / atof(optarg));
+				break;
 			case 'l':
 				len = atoi(optarg);
 				break;
