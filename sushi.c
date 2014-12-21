@@ -237,6 +237,7 @@ int main(int argc, char *argv[])
 		switch(result) {
 			case 's':
 				tick = (long)((double)tick*10.0 / atof(optarg));
+				break;
 			case 'l':
 				len = atoi(optarg);
 				break;
