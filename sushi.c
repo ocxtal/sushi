@@ -4,7 +4,8 @@
 #include <time.h>
 #include <unistd.h>
 #include <locale.h>
-#include <ncurses.h>
+#include "ncurses.h"
+#include <stdarg.h>
 
 #define DEFAULT_SUSHI_LEN	( 5 )
 #define SUSHI_XSIZE 		( 80 )
@@ -75,8 +76,13 @@ struct sushi_view *sushi_init_view()
 /*
  * 画面 (80 * 24)の中で指定
  */
-int sushi_str(struct sushi_view *sv, int x, int y, char const *str)
+int sushi_printf(struct sushi_view *sv, int x, int y, char const *fmt, ...)
 {
+	char str[100];
+	va_list arg;
+	va_start(arg, fmt);
+	vsprintf(str, fmt, arg);
+	va_end(arg);
 	move(sv->org.y + y, sv->org.x + x);
 	addstr(str);
 	return SUSHI_SUCCESS;
@@ -95,12 +101,14 @@ int sushi_emoji(struct sushi_view *sv, int x, int y, char const *str)
 int sushi_draw_game_over(struct sushi_view *sv, int len)
 {
 	char const *str_game_over = "GAME OVER";
-	char str_score[100];
-	erase();
+
 	/* ここにゲームオーバーの画面を表示 */
-	sushi_str(sv, (sv->wsize.x - strlen(str_game_over)) / 2, 10, str_game_over);
-	sprintf(str_score, "sushi len: %4d", len);
-	sushi_str(sv, (sv->wsize.x - strlen(str_score)) / 2, 11, str_score);
+	sushi_printf(sv,
+		(sv->wsize.x - strlen(str_game_over)) / 2, 10,
+		str_game_over);
+	sushi_printf(sv,
+		(sv->wsize.x - 8) / 2, 11,
+		"%3d 🍣 s", len);
 	refresh();
 	usleep(3000000);
 	return SUSHI_GAME_OVER;
@@ -108,6 +116,25 @@ int sushi_draw_game_over(struct sushi_view *sv, int len)
 
 int sushi_draw_game_base(struct sushi_view *sv)
 {
+	if((COLS > sv->wsize.x+2) && (LINES > sv->wsize.y+2)) {
+		move(sv->org.y-1, sv->org.x-1);
+		addch('+');
+		move(sv->org.y-1, sv->org.x);
+		hline('-', sv->wsize.x);
+		move(sv->org.y-1, sv->org.x + sv->wsize.x);
+		addch('+');
+		move(sv->org.y + sv->wsize.y, sv->org.x-1);
+		addch('+');
+		move(sv->org.y + sv->wsize.y, sv->org.x);
+		hline('-', sv->wsize.x);
+		move(sv->org.y + sv->wsize.y, sv->org.x + sv->wsize.x);
+		addch('+');
+
+		move(sv->org.y, sv->org.x-1);
+		vline('|', sv->wsize.y);
+		move(sv->org.y, sv->org.x + sv->wsize.x);
+		vline('|', sv->wsize.y);
+	}
 	move(sv->org.y + sv->gvsize.y, sv->org.x);
 	hline('=', sv->wsize.x);
 	refresh();
@@ -116,6 +143,8 @@ int sushi_draw_game_base(struct sushi_view *sv)
 
 int sushi_redraw_window(struct sushi_view *sv, struct sushi_game *sg)
 {
+	char const *fish[30] = {"🐟🐟🐟", "🍚🍚🍚"};
+
 	/* 魚の再描画 (末尾の魚のみ描画) */
 	sushi_emoji(sv,
 		sg->fish_pos[sg->fish_cnt-1].x, sg->fish_pos[sg->fish_cnt-1].y,
@@ -128,6 +157,15 @@ int sushi_redraw_window(struct sushi_view *sv, struct sushi_game *sg)
 	sushi_emoji(sv,
 		sg->sushi_pos[sg->sushi_len].x, sg->sushi_pos[sg->sushi_len].y,
 		sg->eraser);
+	sushi_printf(sv,
+		0, sv->gvsize.y+1,
+		"🍣 %d", sg->sushi_len);
+	sushi_printf(sv,
+		6, sv->gvsize.y+1,
+		"%s", "🐟🐟🐟");
+	sushi_printf(sv,
+		14, sv->gvsize.y+1,
+		"%s", "🍚🍚🍚");
 	move(0, 0);
 	refresh();
 
@@ -368,6 +406,7 @@ int main(int argc, char *argv[])
 		switch(result) {
 			case 's':
 				tick = (long)((double)tick*10.0 / atof(optarg));
+				break;
 			case 'l':
 				len = atoi(optarg);
 				break;
